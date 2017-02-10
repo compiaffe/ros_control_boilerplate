@@ -39,55 +39,120 @@
 
 #include <rrbot_control/rrbot_hw_interface.h>
 
-namespace rrbot_control
-{
+namespace rrbot_control {
 
-RRBotHWInterface::RRBotHWInterface(ros::NodeHandle &nh, urdf::Model *urdf_model)
-  : ros_control_boilerplate::GenericHWInterface(nh, urdf_model)
-{
+RRBotHWInterface::RRBotHWInterface(ros::NodeHandle &nh,
+                                   FlexRayHardwareInterface &&flex,
+                                   urdf::Model *urdf_model)
+    : ros_control_boilerplate::GenericHWInterface(nh, urdf_model),
+      flex_{std::move(flex)} {
   ROS_INFO_NAMED("rrbot_hw_interface", "RRBotHWInterface Ready.");
 }
 
-void RRBotHWInterface::read(ros::Duration &elapsed_time)
-{
-  // ----------------------------------------------------
-  // ----------------------------------------------------
-  // ----------------------------------------------------
-  //
-  // FILL IN YOUR READ COMMAND FROM USB/ETHERNET/ETHERCAT/SERIAL ETC HERE
-  //
-  // ----------------------------------------------------
-  // ----------------------------------------------------
-  // ----------------------------------------------------
+void RRBotHWInterface::read(ros::Duration &elapsed_time) {
+  for (unsigned int i = 0; i < joint_names_.size(); i++) {
+    flex_.read_muscle(joint_names_[i])
+        .match(
+            [&](muscleState_t &state) {
+              joint_position_.at(i) = state.actuatorPos;
+              joint_velocity_.at(i) = state.actuatorVel;
+              joint_effort_.at(i) = state.tendonDisplacement;
+            },
+            [](FlexRayHardwareInterface::ReadError err) {
+              switch (err) {
+              case FlexRayHardwareInterface::ReadError::MuscleDoesNotExist:
+                ROS_ERROR_STREAM(
+                    "RRBotHWInterface: Error while reading muscle state: "
+                    "MuscleDoesNotExist");
+                break;
+
+              case FlexRayHardwareInterface::ReadError::GanglionNotAttached:
+                ROS_ERROR_STREAM("RRBotHWInterface: Error while "
+                                 "reading muscle state: GanglionNotAttached");
+                break;
+              }
+            });
+  }
 }
 
-void RRBotHWInterface::write(ros::Duration &elapsed_time)
-{
-  // Safety
+void RRBotHWInterface::write(ros::Duration &elapsed_time) {
+  // Safety Not Guaranteed
   enforceLimits(elapsed_time);
 
-  // ----------------------------------------------------
-  // ----------------------------------------------------
-  // ----------------------------------------------------
+  std::set<std::string> jointsWithPosCtrl =
+      position_joint_interface_.getClaims();
+  std::set<std::string> jointsWithVelCtrl =
+      velocity_joint_interface_.getClaims();
+  std::set<std::string> jointsWithEffCtrl = effort_joint_interface_.getClaims();
+
+  std::set<std::string> Pos = jointsWithPosCtrl;
+  for (auto &&joint : jointsWithVelCtrl) {
+    if (Pos.erase(joint)) {
+      ROS_ERROR_STREAM(
+          "RRBotHWInterface: Joint: "
+          << joint << " is being claimed by more than one active controller.");
+    }
+  }
   //
-  // FILL IN YOUR WRITE COMMAND TO USB/ETHERNET/ETHERCAT/SERIAL ETC HERE
+  for (auto &&joint : jointsWithEffCtrl) {
+    if (Pos.erase(joint)) {
+      ROS_ERROR_STREAM(
+          "RRBotHWInterface: Joint: "
+          << joint << " is being claimed by more than one active controller.");
+    }
+  }
+
+  std::set<std::string> Vel = jointsWithVelCtrl;
+  for (auto &&joint : jointsWithPosCtrl) {
+    if (Vel.erase(joint)) {
+      ROS_ERROR_STREAM(
+          "RRBotHWInterface: Joint: "
+          << joint << " is being claimed by more than one active controller.");
+    }
+  }
+
+  for (auto &&joint : jointsWithEffCtrl) {
+    if (Vel.erase(joint)) {
+      ROS_ERROR_STREAM(
+          "RRBotHWInterface: Joint: "
+          << joint << " is being claimed by more than one active controller.");
+    }
+  }
+
+  std::set<std::string> Eff = jointsWithEffCtrl;
+  for (auto &&joint : jointsWithPosCtrl) {
+    if (Eff.erase(joint)) {
+      ROS_ERROR_STREAM(
+          "RRBotHWInterface: Joint: "
+          << joint << " is being claimed by more than one active controller.");
+    }
+  }
   //
-  // FOR A EASY SIMULATION EXAMPLE, OR FOR CODE TO CALCULATE
-  // VELOCITY FROM POSITION WITH SMOOTHING, SEE
-  // sim_hw_interface.cpp IN THIS PACKAGE
-  //
-  // DUMMY PASS-THROUGH CODE
-  for (std::size_t joint_id = 0; joint_id < num_joints_; ++joint_id)
-    joint_position_[joint_id] += joint_position_command_[joint_id];
-  // END DUMMY CODE
-  //
-  // ----------------------------------------------------
-  // ----------------------------------------------------
-  // ----------------------------------------------------
+  for (auto &&joint : jointsWithVelCtrl) {
+    if (Eff.erase(joint)) {
+      ROS_ERROR_STREAM(
+          "RRBotHWInterface: Joint: "
+          << joint << " is being claimed by more than one active controller.");
+    }
+  }
+  for (unsigned int i = 0; i < joint_names_.size(); ++i) {
+    auto const &joint_name = joint_names_[i];
+
+    if (Pos.count(joint_name)) {
+      flex_.set(joint_name, ControlMode::Position,
+                joint_position_command_.at(i));
+    }
+    if (Vel.count(joint_name)) {
+      flex_.set(joint_name, ControlMode::Velocity,
+                joint_velocity_command_.at(i));
+    }
+    if (Eff.count(joint_name)) {
+      flex_.set(joint_name, ControlMode::Force, joint_effort_command_.at(i));
+    }
+  }
 }
 
-void RRBotHWInterface::enforceLimits(ros::Duration &period)
-{
+void RRBotHWInterface::enforceLimits(ros::Duration &period) {
   // ----------------------------------------------------
   // ----------------------------------------------------
   // ----------------------------------------------------
@@ -120,4 +185,4 @@ void RRBotHWInterface::enforceLimits(ros::Duration &period)
   // ----------------------------------------------------
 }
 
-}  // namespace
+} // namespace

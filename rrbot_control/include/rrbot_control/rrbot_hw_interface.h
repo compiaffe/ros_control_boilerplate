@@ -40,20 +40,20 @@
 #ifndef RRBOT_CONTROL__RRBOT_HW_INTERFACE_H
 #define RRBOT_CONTROL__RRBOT_HW_INTERFACE_H
 
+#include <flexrayusbinterface/FlexRayHardwareInterface.hpp>
 #include <ros_control_boilerplate/generic_hw_interface.h>
 
-namespace rrbot_control
-{
+namespace rrbot_control {
 
 /// \brief Hardware interface for a robot
-class RRBotHWInterface : public ros_control_boilerplate::GenericHWInterface
-{
+class RRBotHWInterface : public ros_control_boilerplate::GenericHWInterface {
 public:
   /**
    * \brief Constructor
    * \param nh - Node handle for topics.
    */
-  RRBotHWInterface(ros::NodeHandle& nh, urdf::Model* urdf_model = NULL);
+  RRBotHWInterface(ros::NodeHandle &nh, FlexRayHardwareInterface &&flex,
+                   urdf::Model *urdf_model = NULL);
 
   /** \brief Read the state from the robot hardware. */
   virtual void read(ros::Duration &elapsed_time);
@@ -64,8 +64,10 @@ public:
   /** \breif Enforce limits for all values before writing */
   virtual void enforceLimits(ros::Duration &period);
 
-};  // class
+private:
+  FlexRayHardwareInterface flex_;
+}; // class
 
-}  // namespace
+} // namespace
 
 #endif

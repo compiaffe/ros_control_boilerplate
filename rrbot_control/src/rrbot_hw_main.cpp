@@ -36,11 +36,11 @@
    Desc:   Example ros_control main() entry point for controlling robots in ROS
 */
 
+#include <flexrayusbinterface/Parsers.hpp>
 #include <ros_control_boilerplate/generic_hw_control_loop.h>
 #include <rrbot_control/rrbot_hw_interface.h>
 
-int main(int argc, char** argv)
-{
+int main(int argc, char **argv) {
   ros::init(argc, argv, "rrbot_hw_interface");
   ros::NodeHandle nh;
 
@@ -50,12 +50,51 @@ int main(int argc, char** argv)
   spinner.start();
 
   // Create the hardware interface specific to your robot
-  boost::shared_ptr<rrbot_control::RRBotHWInterface> rrbot_hw_interface
-    (new rrbot_control::RRBotHWInterface(nh));
-  rrbot_hw_interface->init();
+  std::string bridge_description;
+  if (!nh.getParam("/flex_bridge", bridge_description)) {
+    ROS_ERROR_STREAM(
+        "Please provide an ftdi device in ros parameter /myo_blink/ftdi_id");
+    return 1;
+  }
+  try {
+    auto node = YAML::Load(bridge_description);
+    ROS_INFO_STREAM("Description parsed");
+    node = node["FlexRay"];
+    ROS_INFO_STREAM("Fetched yaml data");
 
-  // Start the control loop
-  ros_control_boilerplate::GenericHWControlLoop control_loop(nh, rrbot_hw_interface);
+    FlexRayBus fbus = node.as<FlexRayBus>();
+    while (FlexRayHardwareInterface::connect(std::move(fbus))
+               .match(
+                   [&](FlexRayHardwareInterface &flex) {
+                     ROS_INFO_STREAM("Connected");
+                     // todo: get URDF file to pass in to replace the NULL
+                     if (nh.hasParam("hardware_interface/joints")) {
+                       nh.deleteParam("hardware_interface/joints");
+                     }
+                     nh.setParam("hardware_interface/joints",
+                                 flex.get_muscle_names());
+                     boost::shared_ptr<rrbot_control::RRBotHWInterface>
+                         rrbot_hw_interface(new rrbot_control::RRBotHWInterface(
+                             nh, std::move(flex), NULL));
+                     rrbot_hw_interface->init();
+
+                     // Start the control loop
+                     ros_control_boilerplate::GenericHWControlLoop control_loop(
+                         nh, rrbot_hw_interface);
+                     return false;
+                   },
+                   [&](std::pair<FlexRayBus, FtResult> &result) {
+                     ROS_ERROR_STREAM("Could not connect to the myo motor: "
+                                      << result.second.str());
+                     fbus = std::move(result.first);
+                     return true;
+                   }))
+      ;
+  } catch (YAML::Exception e) {
+    ROS_ERROR_STREAM("Error in /flex_bridge["
+                     << e.mark.pos << "]:" << e.mark.line << ":"
+                     << e.mark.column << ": " << e.msg);
+  }
 
   // Wait until shutdown signal recieved
   ros::waitForShutdown();
