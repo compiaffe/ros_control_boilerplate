@@ -33,7 +33,8 @@
  *********************************************************************/
 
 /* Author: Dave Coleman
-   Desc:   Example ros_control hardware interface that performs a perfect control loop for
+   Desc:   Example ros_control hardware interface that performs a perfect
+   control loop for
    simulation
 */
 
@@ -48,29 +49,20 @@
 #include <urdf/model.h>
 
 // ROS Controls
-#include <hardware_interface/robot_hw.h>
-#include <hardware_interface/joint_state_interface.h>
-#include <hardware_interface/joint_command_interface.h>
 #include <controller_manager/controller_manager.h>
+#include <hardware_interface/joint_command_interface.h>
+#include <hardware_interface/joint_state_interface.h>
+#include <hardware_interface/robot_hw.h>
 #include <joint_limits_interface/joint_limits.h>
 #include <joint_limits_interface/joint_limits_interface.h>
 #include <joint_limits_interface/joint_limits_rosparam.h>
 #include <joint_limits_interface/joint_limits_urdf.h>
 
-namespace ros_control_boilerplate
-{
+namespace ros_control_boilerplate {
 
 /// \brief Hardware interface for a robot
-class GenericHWInterface : public hardware_interface::RobotHW
-{
+class GenericHWInterface : public hardware_interface::RobotHW {
 public:
-  /**
-   * \brief Constructor
-   * \param nh - Node handle for topics.
-   * \param urdf - optional pointer to a parsed robot model
-   */
-  GenericHWInterface(ros::NodeHandle &nh, urdf::Model *urdf_model = NULL);
-
   /** \brief Destructor */
   virtual ~GenericHWInterface() {}
 
@@ -87,37 +79,43 @@ public:
   virtual void reset();
 
   /**
-   * \brief Check (in non-realtime) if given controllers could be started and stopped from the
+   * \brief Check (in non-realtime) if given controllers could be started and
+   * stopped from the
    * current state of the RobotHW
-   * with regard to necessary hardware interface switches. Start and stop list are disjoint.
+   * with regard to necessary hardware interface switches. Start and stop list
+   * are disjoint.
    * This is just a check, the actual switch is done in doSwitch()
    */
-  virtual bool canSwitch(const std::list<hardware_interface::ControllerInfo> &start_list,
-                         const std::list<hardware_interface::ControllerInfo> &stop_list) const
-  {
+  virtual bool canSwitch(
+      const std::list<hardware_interface::ControllerInfo> &start_list,
+      const std::list<hardware_interface::ControllerInfo> &stop_list) const {
     return true;
   }
 
   /**
-   * \brief Perform (in non-realtime) all necessary hardware interface switches in order to start
+   * \brief Perform (in non-realtime) all necessary hardware interface switches
+   * in order to start
    * and stop the given controllers.
-   * Start and stop list are disjoint. The feasability was checked in canSwitch() beforehand.
+   * Start and stop list are disjoint. The feasability was checked in
+   * canSwitch() beforehand.
    */
-  virtual void doSwitch(const std::list<hardware_interface::ControllerInfo> &start_list,
-                        const std::list<hardware_interface::ControllerInfo> &stop_list)
-  {
-  }
+  virtual void
+  doSwitch(const std::list<hardware_interface::ControllerInfo> &start_list,
+           const std::list<hardware_interface::ControllerInfo> &stop_list) {}
 
   /**
-   * \brief Register the limits of the joint specified by joint_id and joint_handle. The limits
+   * \brief Register the limits of the joint specified by joint_id and
+   * joint_handle. The limits
    * are retrieved from the urdf_model.
    *
-   * \return the joint's type, lower position limit, upper position limit, and effort limit.
+   * \return the joint's type, lower position limit, upper position limit, and
+   * effort limit.
    */
-  virtual void registerJointLimits(const hardware_interface::JointHandle &joint_handle_position,
-                           const hardware_interface::JointHandle &joint_handle_velocity,
-                           const hardware_interface::JointHandle &joint_handle_effort,
-                           std::size_t joint_id);
+  virtual void registerJointLimits(
+      const hardware_interface::JointHandle &joint_handle_position,
+      const hardware_interface::JointHandle &joint_handle_velocity,
+      const hardware_interface::JointHandle &joint_handle_effort,
+      std::size_t joint_id);
 
   /** \breif Enforce limits for all values before writing */
   virtual void enforceLimits(ros::Duration &period) = 0;
@@ -129,10 +127,28 @@ public:
   /** \brief Helper for debugging a joint's command */
   std::string printCommandHelper();
 
+  GenericHWInterface(GenericHWInterface &&) = default;
+  GenericHWInterface &operator=(GenericHWInterface &&) = default;
+
+  static auto setup(ros::NodeHandle &nh, urdf::Model *urdf_model = NULL)
+      -> variant<GenericHWInterface, couldNotSetup>;
+
+  struct couldNotSetup {};
+
+private:
+  /**
+   * \brief Constructor
+   * \param nh - Node handle for topics.
+   * \param urdf - optional pointer to a parsed robot model
+   */
+  GenericHWInterface(ros::NodeHandle &nh, urdf::Model *urdf_model = NULL);
+
 protected:
+  /** \brief Get the joint names from the parameter server */
+  virtual void getJointNames(void);
 
   /** \brief Get the URDF XML from the parameter server */
-  virtual void loadURDF(ros::NodeHandle& nh, std::string param_name);
+  virtual void loadURDF(ros::NodeHandle &nh, std::string param_name);
 
   // Short name of this class
   std::string name_;
@@ -147,8 +163,10 @@ protected:
   hardware_interface::EffortJointInterface effort_joint_interface_;
 
   // Joint limits interfaces - Saturation
-  joint_limits_interface::PositionJointSaturationInterface pos_jnt_sat_interface_;
-  joint_limits_interface::VelocityJointSaturationInterface vel_jnt_sat_interface_;
+  joint_limits_interface::PositionJointSaturationInterface
+      pos_jnt_sat_interface_;
+  joint_limits_interface::VelocityJointSaturationInterface
+      vel_jnt_sat_interface_;
   joint_limits_interface::EffortJointSaturationInterface eff_jnt_sat_interface_;
 
   // Joint limits interfaces - Soft limits
@@ -181,8 +199,8 @@ protected:
   std::vector<double> joint_velocity_limits_;
   std::vector<double> joint_effort_limits_;
 
-};  // class
+}; // class
 
-}  // namespace
+} // namespace
 
 #endif // GENERIC_ROS_CONTROL_GENERIC_HW_INTERFACE_H
