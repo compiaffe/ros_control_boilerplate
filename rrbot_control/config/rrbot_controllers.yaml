@@ -8,6 +8,229 @@ generic_hw_control_loop:
 hardware_interface:
    sim_control_mode: 1 # 0: position, 1: velocity
 
+FlexRay:
+  serial: FTY4PDYV
+
+  _SoftSpring: &SOFT
+    constant: 0.3
+    linear: 0.9
+    quadratic: 0.01
+    cubic: 0.002
+
+  ganglion 0:
+    muscle 0:
+      id: left_biceps
+
+      Force:
+        output_pos_max: 1000
+        output_neg_max: -1000
+        time_period: 100.0
+        rad_per_encoder_count: 0.00005788606746738269
+        P_gain: 70.0
+        I_gain: 0.0
+        D_gain: 0.0
+        forward_gain: 0.0
+        dead_band: 0.0
+        integral: 0.0
+        integral_pos_min: 0.0
+        integral_pos_max: 0.0
+        sp_pos_min: -100.0
+        sp_pos_max: 100.0
+        torque: 1.0
+        spring: *SOFT
+
+      Velocity:
+        output_pos_max: 1000
+        output_neg_max: -1000
+        time_period: 100.0
+        rad_per_encoder_count: 0.00005788606746738269
+        P_gain: 200.0
+        I_gain: 0.0
+        D_gain: 0.0
+        forward_gain: 0.0
+        dead_band: 0.0
+        integral: 0.0
+        integral_pos_min: 0.0
+        integral_pos_max: 0.0
+        sp_pos_min: -100.0
+        sp_pos_max: 100.0
+
+      Position:
+        output_pos_max: 1000
+        output_neg_max: -1000
+        time_period: 100.0
+        rad_per_encoder_count: 0.00005788606746738269
+        P_gain: 100.0
+        I_gain: 0.0
+        D_gain: 0.0
+        forward_gain: 0.0
+        dead_band: 0.0
+        integral: 0.0
+        integral_pos_min: 0.0
+        integral_pos_max: 0.0
+        sp_pos_min: -100.0
+        sp_pos_max: 100.0
+
+    muscle 1:
+      id: left_triceps
+
+      Force:
+        output_pos_max: 1000
+        output_neg_max: -1000
+        time_period: 100.0
+        rad_per_encoder_count: 0.00005788606746738269
+        P_gain: 70.0
+        I_gain: 0.0
+        D_gain: 0.0
+        forward_gain: 0.0
+        dead_band: 0.0
+        integral: 0.0
+        integral_pos_min: 0.0
+        integral_pos_max: 0.0
+        sp_pos_min: -100.0
+        sp_pos_max: 100.0
+        torque: 1.0
+        spring: *SOFT
+
+      Velocity:
+        output_pos_max: 1000
+        output_neg_max: -1000
+        time_period: 100.0
+        rad_per_encoder_count: 0.00005788606746738269
+        P_gain: 200.0
+        I_gain: 0.0
+        D_gain: 0.0
+        forward_gain: 0.0
+        dead_band: 0.0
+        integral: 0.0
+        integral_pos_min: 0.0
+        integral_pos_max: 0.0
+        sp_pos_min: -100.0
+        sp_pos_max: 100.0
+
+      Position:
+        output_pos_max: 1000
+        output_neg_max: -1000
+        time_period: 100.0
+        rad_per_encoder_count: 0.00005788606746738269
+        P_gain: 100.0
+        I_gain: 0.0
+        D_gain: 0.0
+        forward_gain: 0.0
+        dead_band: 0.0
+        integral: 0.0
+        integral_pos_min: 0.0
+        integral_pos_max: 0.0
+        sp_pos_min: -100.0
+        sp_pos_max: 100.0
+
+    muscle 2:
+      id: left_supraspinatus
+
+      Force:
+        output_pos_max: 1000
+        output_neg_max: -1000
+        time_period: 100.0
+        rad_per_encoder_count: 0.00005788606746738269
+        P_gain: 70.0
+        I_gain: 0.0
+        D_gain: 0.0
+        forward_gain: 0.0
+        dead_band: 0.0
+        integral: 0.0
+        integral_pos_min: 0.0
+        integral_pos_max: 0.0
+        sp_pos_min: -100.0
+        sp_pos_max: 100.0
+        torque: 1.0
+        spring: *SOFT
+
+      Velocity:
+        output_pos_max: 1000
+        output_neg_max: -1000
+        time_period: 100.0
+        rad_per_encoder_count: 0.00005788606746738269
+        P_gain: 200.0
+        I_gain: 0.0
+        D_gain: 0.0
+        forward_gain: 0.0
+        dead_band: 0.0
+        integral: 0.0
+        integral_pos_min: 0.0
+        integral_pos_max: 0.0
+        sp_pos_min: -100.0
+        sp_pos_max: 100.0
+
+      Position:
+        output_pos_max: 1000
+        output_neg_max: -1000
+        time_period: 100.0
+        rad_per_encoder_count: 0.00005788606746738269
+        P_gain: 100.0
+        I_gain: 0.0
+        D_gain: 0.0
+        forward_gain: 0.0
+        dead_band: 0.0
+        integral: 0.0
+        integral_pos_min: 0.0
+        integral_pos_max: 0.0
+        sp_pos_min: -100.0
+        sp_pos_max: 100.0
+
+    muscle 3:
+      id: left_pectoralis
+
+      Force:
+        output_pos_max: 1000
+        output_neg_max: -1000
+        time_period: 100.0
+        rad_per_encoder_count: 0.00005788606746738269
+        P_gain: 70.0
+        I_gain: 0.0
+        D_gain: 0.0
+        forward_gain: 0.0
+        dead_band: 0.0
+        integral: 0.0
+        integral_pos_min: 0.0
+        integral_pos_max: 0.0
+        sp_pos_min: -100.0
+        sp_pos_max: 100.0
+        torque: 1.0
+        spring: *SOFT
+
+      Velocity:
+        output_pos_max: 1000
+        output_neg_max: -1000
+        time_period: 100.0
+        rad_per_encoder_count: 0.00005788606746738269
+        P_gain: 200.0
+        I_gain: 0.0
+        D_gain: 0.0
+        forward_gain: 0.0
+        dead_band: 0.0
+        integral: 0.0
+        integral_pos_min: 0.0
+        integral_pos_max: 0.0
+        sp_pos_min: -100.0
+        sp_pos_max: 100.0
+
+      Position:
+        output_pos_max: 1000
+        output_neg_max: -1000
+        time_period: 100.0
+        rad_per_encoder_count: 0.00005788606746738269
+        P_gain: 100.0
+        I_gain: 0.0
+        D_gain: 0.0
+        forward_gain: 0.0
+        dead_band: 0.0
+        integral: 0.0
+        integral_pos_min: 0.0
+        integral_pos_max: 0.0
+        sp_pos_min: -100.0
+        sp_pos_max: 100.0
+
+
 # Publish all joint states ----------------------------------
 # Creates the /joint_states topic necessary in ROS
 joint_state_controller:
@@ -43,7 +266,7 @@ position_trajectory_controller:
 # Allows to send individual ROS msg of Float64 to each joint separately
 joint1_position_controller:
    type: position_controllers/JointPositionController
-   joint: joint1
+   joint: muscle 0
    pid: {p: 100.0, i: 0.01, d: 10.0}
 joint2_position_controller:
    type: position_controllers/JointPositionController
@@ -55,5 +278,7 @@ joint2_position_controller:
 joint_position_controller:
    type: position_controllers/JointGroupPositionController
    joints:
-     - joint1
-     - joint2
+     - left_biceps
+     - left_supraspinatus
+     - left_pectoralis
+     - left_triceps
