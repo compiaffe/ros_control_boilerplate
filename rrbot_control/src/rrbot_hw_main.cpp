@@ -51,9 +51,9 @@ int main(int argc, char **argv) {
 
   // Create the hardware interface specific to your robot
   std::string bridge_description;
-  if (!nh.getParam("/flex_bridge", bridge_description)) {
+  if (!nh.getParam("flex_bridge", bridge_description)) {
     ROS_ERROR_STREAM(
-        "Please provide an ftdi device in ros parameter /myo_blink/ftdi_id");
+        "Please provide an ftdi device in ros parameter flex_bridge/");
     return 1;
   }
   try {
