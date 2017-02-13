@@ -139,9 +139,7 @@ public:
     puts("Use 'WS' to for joint 2");
     puts("Use 'ED' to for joint 3");
     puts("Use 'RF' to for joint 4");
-    puts("Use 'TG' to for joint 5");
-    puts("Use 'YH' to for joint 6");
-    puts("Use 'UJ' to for joint 7");
+
     puts("ESC to end");
 
     double delta_dist = 0.5;
@@ -181,27 +179,6 @@ public:
         break;
       case KEYCODE_f:
         cmd_.data[3] = cmd_.data[3] - delta_dist; // radians
-        break;
-
-      case KEYCODE_t:
-        cmd_.data[4] = cmd_.data[4] + delta_dist; // radians
-        break;
-      case KEYCODE_g:
-        cmd_.data[4] = cmd_.data[4] - delta_dist; // radians
-        break;
-
-      case KEYCODE_y:
-        cmd_.data[5] = cmd_.data[5] + delta_dist; // radians
-        break;
-      case KEYCODE_h:
-        cmd_.data[5] = cmd_.data[5] - delta_dist; // radians
-        break;
-
-      case KEYCODE_u:
-        cmd_.data[6] = cmd_.data[6] + delta_dist; // radians
-        break;
-      case KEYCODE_j:
-        cmd_.data[6] = cmd_.data[6] - delta_dist; // radians
         break;
 
       case KEYCODE_0:
