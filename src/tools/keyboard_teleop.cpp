@@ -72,6 +72,7 @@
 #define KEYCODE_y 0x79
 #define KEYCODE_z 0x7a
 #define KEYCODE_ESCAPE 0x1B
+#define KEYCODE_0 0x0
 
 int kfd = 0;
 struct termios cooked, raw;
@@ -103,7 +104,7 @@ public:
 
     // Copy latest joint positions to our output message
     if (!has_recieved_joints_)
-      cmd_.data = msg->position;
+      cmd_.data = 0.0; // msg->effort;
 
     // Debug
     // std::copy(cmd_.data.begin(), cmd_.data.end(),
@@ -129,6 +130,7 @@ public:
 
     puts("Reading from keyboard");
     puts("---------------------------");
+    puts("Use '0' to set all joints to 0");
     puts("Use 'QA' to for joint 1");
     puts("Use 'WS' to for joint 2");
     puts("Use 'ED' to for joint 3");
@@ -138,7 +140,7 @@ public:
     puts("Use 'UJ' to for joint 7");
     puts("ESC to end");
 
-    double delta_dist = 0.1;
+    double delta_dist = 0.5;
 
     for (;;) {
       // get the next event from the keyboard
@@ -198,6 +200,12 @@ public:
         cmd_.data[6] = cmd_.data[6] - delta_dist; // radians
         break;
 
+      case KEYCODE_0:
+        for (unsigned int i = 0; i < cmd_.data.size(); ++i) {
+          cmd_.data[i] = 0.0;
+        }
+        break;
+
       case KEYCODE_ESCAPE:
         std::cout << std::endl;
         std::cout << "Exiting " << std::endl;
@@ -218,6 +226,11 @@ public:
               "Unable to send joint commands because robot state is invalid");
         } else {
           std::cout << ".";
+          for (unsigned int i = 0; i < cmd_.data.size(); ++i) {
+            if (cmd_.data[i] < 0) {
+              cmd_.data[i] = 0.0;
+            }
+          }
           joints_pub_.publish(cmd_);
         }
       }
