@@ -47,6 +47,9 @@ RRBotHWInterface::RRBotHWInterface(ros::NodeHandle &nh,
     : ros_control_boilerplate::GenericHWInterface(nh, urdf_model),
       flex_{std::move(flex)} {
   ROS_INFO_NAMED("rrbot_hw_interface", "RRBotHWInterface Ready.");
+  // joint_angle_pub_ =
+  //  new realtime_tools::RealtimePublisher<sensor_msgs::JointState>(
+  //    nh, "joints", 4);
 }
 
 void RRBotHWInterface::read(ros::Duration &elapsed_time) {
@@ -81,9 +84,18 @@ void RRBotHWInterface::write(ros::Duration &elapsed_time) {
 
   std::set<std::string> jointsWithPosCtrl =
       position_joint_interface_.getClaims();
+  for (auto &&claims : jointsWithPosCtrl) {
+    ROS_INFO_STREAM("position claims: " << claims);
+  }
   std::set<std::string> jointsWithVelCtrl =
       velocity_joint_interface_.getClaims();
+  for (auto &&claims : jointsWithVelCtrl) {
+    ROS_INFO_STREAM("Velocity claims: " << claims);
+  }
   std::set<std::string> jointsWithEffCtrl = effort_joint_interface_.getClaims();
+  for (auto &&claims : jointsWithEffCtrl) {
+    ROS_INFO_STREAM("Force claims: " << claims);
+  }
 
   std::set<std::string> Pos = jointsWithPosCtrl;
   for (auto &&joint : jointsWithVelCtrl) {
@@ -139,16 +151,22 @@ void RRBotHWInterface::write(ros::Duration &elapsed_time) {
     auto const &joint_name = joint_names_[i];
 
     if (Pos.count(joint_name)) {
+      ROS_INFO_STREAM("Writing position command");
       flex_.set(joint_name, ControlMode::Position,
                 joint_position_command_.at(i));
     }
     if (Vel.count(joint_name)) {
+      ROS_INFO_STREAM("Writing velocity command");
+
       flex_.set(joint_name, ControlMode::Velocity,
                 joint_velocity_command_.at(i));
     }
     if (Eff.count(joint_name)) {
+      ROS_INFO_STREAM("Writing effort command");
+
       flex_.set(joint_name, ControlMode::Force, joint_effort_command_.at(i));
     }
+    flex_.set(joint_name, ControlMode::Force, joint_effort_command_.at(i));
   }
 }
 

@@ -6,7 +6,7 @@
   <arg     if="$(arg debug)" name="launch_prefix" value="gdb --ex run --args" />
 
   <!-- Load example URDF -->
-  <param name="robot_description" command="$(find xacro)/xacro.py '$(find rrbot_description)/urdf/rrbot.xacro'" />
+  <param name="robot_description" command="$(find xacro)/xacro.py '$(find ros_control_boilerplate)/rrbot_control/config/rrbot.xacro'" />
 
   <group ns="rrbot">
 
@@ -16,11 +16,11 @@
 
     <!-- Load controller settings -->
     <rosparam file="$(find ros_control_boilerplate)/rrbot_control/config/rrbot_controllers.yaml" command="load"/>
-    <param name="flex_bridge" textfile="$(find rrbot_control)/config/rrbot_controllers.yaml" />
+    <param name="flex_bridge" textfile="$(find ros_control_boilerplate)/rrbot_control/config/rrbot_controllers.yaml" />
 
     <!-- Load controller manager -->
     <node name="ros_control_controller_manager" pkg="controller_manager" type="controller_manager" respawn="false"
-    output="screen" args="spawn joint_state_controller position_trajectory_controller" />
+    output="screen" args="spawn joint_state_controller joint_effort_controller" />
 
     <!-- Convert joint states to /tf tranforms -->
     <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher"/>

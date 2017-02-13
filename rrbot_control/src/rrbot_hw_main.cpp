@@ -46,7 +46,7 @@ int main(int argc, char **argv) {
 
   // NOTE: We run the ROS loop in a separate thread as external calls such
   // as service callbacks to load controllers can block the (main) control loop
-  ros::AsyncSpinner spinner(2);
+  ros::AsyncSpinner spinner(10);
   spinner.start();
 
   // Create the hardware interface specific to your robot
@@ -77,10 +77,12 @@ int main(int argc, char **argv) {
                          rrbot_hw_interface(new rrbot_control::RRBotHWInterface(
                              nh, std::move(flex), NULL));
                      rrbot_hw_interface->init();
+                     ROS_INFO_STREAM("Initialised");
 
                      // Start the control loop
                      ros_control_boilerplate::GenericHWControlLoop control_loop(
                          nh, rrbot_hw_interface);
+                     ros::waitForShutdown();
                      return false;
                    },
                    [&](std::pair<FlexRayBus, FtResult> &result) {
@@ -95,9 +97,6 @@ int main(int argc, char **argv) {
                      << e.mark.pos << "]:" << e.mark.line << ":"
                      << e.mark.column << ": " << e.msg);
   }
-
-  // Wait until shutdown signal recieved
-  ros::waitForShutdown();
 
   return 0;
 }

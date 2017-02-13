@@ -1,8 +1,8 @@
 # ros_control_boilerplate Settings -----------------------
 # Settings for ros_control control loop
 generic_hw_control_loop:
-  loop_hz: 300
-  cycle_time_error_threshold: 0.01
+  loop_hz: 30
+  cycle_time_error_threshold: 0.04
 
 # Settings for ros_control hardware interface
 hardware_interface:
@@ -239,19 +239,20 @@ joint_state_controller:
 
 # Joint Trajectory Controller -------------------------------
 # For detailed explanations of parameter see http://wiki.ros.org/joint_trajectory_controller
-position_trajectory_controller:
-   type: position_controllers/JointTrajectoryController
-   # These joints can likely just be copied from the hardware_interface list above
+effort_trajectory_controller:
+   type: effort_controllers/JointTrajectoryController
    joints:
-      - joint1
-      - joint2
+     - left_biceps
+     - left_supraspinatus
+     - left_pectoralis
+     - left_triceps
    constraints:
       goal_time: 5.0
       #stopped_position_tolerance: 0.4 # Defaults to 0.01
-      joint1:
+      left_biceps:
           trajectory: 0.60
           goal:       0.15
-      joint2:
+      left_supraspinatus:
           trajectory: 0.60
           goal:       0.15
    # gains:
@@ -267,16 +268,13 @@ position_trajectory_controller:
 joint1_position_controller:
    type: position_controllers/JointPositionController
    joint: muscle 0
-   pid: {p: 100.0, i: 0.01, d: 10.0}
-joint2_position_controller:
-   type: position_controllers/JointPositionController
-   joint: joint2
-   pid: {p: 100.0, i: 0.01, d: 10.0}
+   #pid: {p: 100.0, i: 0.01, d: 10.0}
+
 
 # Group Position Controllers ---------------------------------------
 # Allows to send single ROS msg of Float64MultiArray to all joints
-joint_position_controller:
-   type: position_controllers/JointGroupPositionController
+joint_effort_controller:
+   type: effort_controllers/JointGroupEffortController
    joints:
      - left_biceps
      - left_supraspinatus

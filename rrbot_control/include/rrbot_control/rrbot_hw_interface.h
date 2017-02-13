@@ -41,8 +41,9 @@
 #define RRBOT_CONTROL__RRBOT_HW_INTERFACE_H
 
 #include <flexrayusbinterface/FlexRayHardwareInterface.hpp>
+#include <realtime_tools/realtime_publisher.h>
 #include <ros_control_boilerplate/generic_hw_interface.h>
-
+#include <sensor_msgs/JointState.h>
 namespace rrbot_control {
 
 /// \brief Hardware interface for a robot
@@ -66,6 +67,7 @@ public:
 
 private:
   FlexRayHardwareInterface flex_;
+  realtime_tools::RealtimePublisher<sensor_msgs::JointState> joint_angle_pub_;
 }; // class
 
 } // namespace

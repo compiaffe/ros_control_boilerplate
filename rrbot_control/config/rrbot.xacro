@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+ <robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="roboy">
+     <link name="base_link">
+  </link>
+<xacro:macro name="muscle" params="prefix ">
+  <link name="${prefix}_link">
+  </link>
+   <joint name="${prefix}" type="fixed">
+     <parent link="base_link"/>
+      <child link="${prefix}_link"/>
+      <origin xyz="0 0 0" />
+    </joint>
+</xacro:macro>
+<xacro:muscle prefix="left_biceps" />
+<xacro:muscle prefix="left_triceps" />
+<xacro:muscle prefix="left_supraspinatus" />
+<xacro:muscle prefix="left_pectoralis" />
+
+</robot>
