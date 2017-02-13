@@ -12,10 +12,22 @@ FlexRay:
   serial: FTY4PDYV
 
   _SoftSpring: &SOFT
-    constant: 0.3
-    linear: 0.9
-    quadratic: 0.01
-    cubic: 0.002
+    constant: 0.0
+    linear: 0.237536
+    quadratic: -0.000032
+    cubic: 0.0
+
+  _MediumSpring: &MEDIUM
+    constant: 0.0 #1.604382
+    linear: 0.508932
+    quadratic: -0.000117
+    cubic: 0.0
+
+  _HardSpring: &HARD
+    constant: 1.186483
+    linear: 0.938377
+    quadratic: -0.000274
+    cubic: 0.000001
 
   ganglion 0:
     muscle 0:
@@ -26,9 +38,9 @@ FlexRay:
         output_neg_max: -1000
         time_period: 100.0
         rad_per_encoder_count: 0.00005788606746738269
-        P_gain: 70.0
+        P_gain: 70
         I_gain: 0.0
-        D_gain: 0.0
+        D_gain: 0
         forward_gain: 0.0
         dead_band: 0.0
         integral: 0.0
@@ -37,7 +49,7 @@ FlexRay:
         sp_pos_min: -100.0
         sp_pos_max: 100.0
         torque: 1.0
-        spring: *SOFT
+        spring: *MEDIUM
 
       Velocity:
         output_pos_max: 1000
@@ -79,9 +91,9 @@ FlexRay:
         output_neg_max: -1000
         time_period: 100.0
         rad_per_encoder_count: 0.00005788606746738269
-        P_gain: 70.0
+        P_gain: 70
         I_gain: 0.0
-        D_gain: 0.0
+        D_gain: 0
         forward_gain: 0.0
         dead_band: 0.0
         integral: 0.0
@@ -90,7 +102,7 @@ FlexRay:
         sp_pos_min: -100.0
         sp_pos_max: 100.0
         torque: 1.0
-        spring: *SOFT
+        spring: *MEDIUM
 
       Velocity:
         output_pos_max: 1000
@@ -132,9 +144,9 @@ FlexRay:
         output_neg_max: -1000
         time_period: 100.0
         rad_per_encoder_count: 0.00005788606746738269
-        P_gain: 70.0
+        P_gain: 70
         I_gain: 0.0
-        D_gain: 0.0
+        D_gain: 0
         forward_gain: 0.0
         dead_band: 0.0
         integral: 0.0
@@ -143,7 +155,7 @@ FlexRay:
         sp_pos_min: -100.0
         sp_pos_max: 100.0
         torque: 1.0
-        spring: *SOFT
+        spring: *MEDIUM
 
       Velocity:
         output_pos_max: 1000
@@ -185,9 +197,9 @@ FlexRay:
         output_neg_max: -1000
         time_period: 100.0
         rad_per_encoder_count: 0.00005788606746738269
-        P_gain: 70.0
+        P_gain: 70
         I_gain: 0.0
-        D_gain: 0.0
+        D_gain: 0
         forward_gain: 0.0
         dead_band: 0.0
         integral: 0.0
@@ -196,7 +208,7 @@ FlexRay:
         sp_pos_min: -100.0
         sp_pos_max: 100.0
         torque: 1.0
-        spring: *SOFT
+        spring: *MEDIUM
 
       Velocity:
         output_pos_max: 1000
@@ -243,9 +255,9 @@ effort_trajectory_controller:
    type: effort_controllers/JointTrajectoryController
    joints:
      - left_biceps
-     - left_supraspinatus
-     - left_pectoralis
      - left_triceps
+     - left_pectoralis
+     - left_supraspinatus
    constraints:
       goal_time: 5.0
       #stopped_position_tolerance: 0.4 # Defaults to 0.01
@@ -261,7 +273,7 @@ effort_trajectory_controller:
 
     # state_publish_rate:  50 # Defaults to 50
     # action_monitor_rate: 20 # Defaults to 20
-    #hold_trajectory_duration: 0 # Defaults to 0.5
+    #hold_trajectory_duration: 0 # Defaults to 0.5rrrrr
 
 # Individual Position Controllers ---------------------------------------
 # Allows to send individual ROS msg of Float64 to each joint separately
@@ -277,6 +289,6 @@ joint_effort_controller:
    type: effort_controllers/JointGroupEffortController
    joints:
      - left_biceps
-     - left_supraspinatus
-     - left_pectoralis
      - left_triceps
+     - left_pectoralis
+     - left_supraspinatus

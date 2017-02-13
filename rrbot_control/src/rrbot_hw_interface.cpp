@@ -60,6 +60,8 @@ void RRBotHWInterface::read(ros::Duration &elapsed_time) {
               joint_position_.at(i) = state.actuatorPos;
               joint_velocity_.at(i) = state.actuatorVel;
               joint_effort_.at(i) = state.tendonDisplacement;
+              ROS_INFO_STREAM("joint angles for joint to be printed: "
+                              << i << " is: " << state.jointPos);
             },
             [](FlexRayHardwareInterface::ReadError err) {
               switch (err) {
