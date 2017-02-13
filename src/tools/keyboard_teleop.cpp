@@ -72,7 +72,7 @@
 #define KEYCODE_y 0x79
 #define KEYCODE_z 0x7a
 #define KEYCODE_ESCAPE 0x1B
-#define KEYCODE_0 0x0
+#define KEYCODE_0 0x30
 
 int kfd = 0;
 struct termios cooked, raw;
@@ -194,8 +194,14 @@ public:
         break;
 
       default:
-        std::cout << "CODE: " << c << std::endl;
+        std::cout << "You pressed unmapped CODE: " << c
+                  << " Setting setpoints to 0." << std::endl;
+
         dirty = false;
+        for (unsigned int i = 0; i < cmd_.data.size(); ++i) {
+          cmd_.data[i] = 0.0;
+        }
+        dirty = true; // We could remove this one...
       }
 
       // Publish command
