@@ -104,7 +104,11 @@ public:
 
     // Copy latest joint positions to our output message
     if (!has_recieved_joints_)
-      cmd_.data = 0.0; // msg->effort;
+      for (unsigned int i = 0; i < cmd_.data.size(); ++i) {
+        if (cmd_.data[i] < 0) {
+          cmd_.data[i] = 0.0;
+        }
+      }
 
     // Debug
     // std::copy(cmd_.data.begin(), cmd_.data.end(),
